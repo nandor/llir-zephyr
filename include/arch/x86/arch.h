@@ -45,135 +45,229 @@ typedef struct x86_msi_vector arch_msi_vector_t;
 static ALWAYS_INLINE void arch_irq_unlock(unsigned int key)
 {
 	if ((key & 0x00000200U) != 0U) { /* 'IF' bit */
+	#ifdef __llir__
+		__asm__ volatile ("x86_sti" ::: "memory");
+	#else
 		__asm__ volatile ("sti" ::: "memory");
+	#endif
 	}
 }
 
 static ALWAYS_INLINE void sys_out8(uint8_t data, io_port_t port)
 {
+#ifdef __llir__
+  __asm__ __volatile__("x86_out %1, %0" : : "r"(data), "r"(port));
+#else
 	__asm__ volatile("outb %b0, %w1" :: "a"(data), "Nd"(port));
+#endif
 }
 
 static ALWAYS_INLINE uint8_t sys_in8(io_port_t port)
 {
 	uint8_t ret;
-
+#ifdef __llir__
+   __asm__ __volatile__("x86_in.i8 %0, %1" : "=r"(ret) : "r"(port));
+#else
 	__asm__ volatile("inb %w1, %b0" : "=a"(ret) : "Nd"(port));
+#endif
 
 	return ret;
 }
 
 static ALWAYS_INLINE void sys_out16(uint16_t data, io_port_t port)
 {
+#ifdef __llir__
+  __asm__ __volatile__("x86_out %1, %0" : : "r"(data), "r"(port));
+#else
 	__asm__ volatile("outw %w0, %w1" :: "a"(data), "Nd"(port));
+#endif
 }
 
 static ALWAYS_INLINE uint16_t sys_in16(io_port_t port)
 {
 	uint16_t ret;
 
+#ifdef __llir__
+  __asm__ __volatile__("x86_in.i16 %0, %1" : "=r"(ret) : "r"(port));
+#else
 	__asm__ volatile("inw %w1, %w0" : "=a"(ret) : "Nd"(port));
+#endif
 
 	return ret;
 }
 
 static ALWAYS_INLINE void sys_out32(uint32_t data, io_port_t port)
 {
+#ifdef __llir__
+  __asm__ __volatile__("x86_out %1, %0" : : "r"(data), "r"(port));
+#else
 	__asm__ volatile("outl %0, %w1" :: "a"(data), "Nd"(port));
+#endif
 }
 
 static ALWAYS_INLINE uint32_t sys_in32(io_port_t port)
 {
 	uint32_t ret;
 
+#ifdef __llir__
+  __asm__ __volatile__("x86_in.i32 %0, %1" : "=r"(ret) : "r"(port));
+#else
 	__asm__ volatile("inl %w1, %0" : "=a"(ret) : "Nd"(port));
+#endif
 
 	return ret;
 }
 
 static ALWAYS_INLINE void sys_write8(uint8_t data, mm_reg_t addr)
 {
+#ifdef __llir__
+	__asm__ volatile
+		( "st %1, %0"
+		:
+		: "r"(data)
+		, "m" (*(volatile uint8_t *)(uintptr_t) addr)
+		: "memory"
+		);
+#else
 	__asm__ volatile("movb %0, %1"
 			 :
 			 : "q"(data), "m" (*(volatile uint8_t *)(uintptr_t) addr)
 			 : "memory");
+#endif
 }
 
 static ALWAYS_INLINE uint8_t sys_read8(mm_reg_t addr)
 {
 	uint8_t ret;
 
+#ifdef __llir__
+	__asm__ volatile
+		( "ld.i8 %0, %1"
+		: "=r"(ret)
+		: "m" (*(volatile uint8_t *)(uintptr_t) addr)
+		: "memory"
+		);
+#else
 	__asm__ volatile("movb %1, %0"
 			 : "=q"(ret)
 			 : "m" (*(volatile uint8_t *)(uintptr_t) addr)
 			 : "memory");
+#endif
 
 	return ret;
 }
 
 static ALWAYS_INLINE void sys_write16(uint16_t data, mm_reg_t addr)
 {
+#ifdef __llir__
+	__asm__ volatile
+		( "st %1, %0"
+		:
+		: "r"(data)
+		, "m" (*(volatile uint16_t *)(uintptr_t) addr)
+		: "memory"
+		);
+#else
 	__asm__ volatile("movw %0, %1"
 			 :
 			 : "r"(data), "m" (*(volatile uint16_t *)(uintptr_t) addr)
 			 : "memory");
+#endif
 }
 
 static ALWAYS_INLINE uint16_t sys_read16(mm_reg_t addr)
 {
 	uint16_t ret;
 
+#ifdef __llir__
+	__asm__ volatile
+		( "ld.i16 %0, %1"
+		: "=r"(ret)
+		: "m" (*(volatile uint16_t *)(uintptr_t) addr)
+		: "memory"
+		);
+#else
 	__asm__ volatile("movw %1, %0"
 			 : "=r"(ret)
 			 : "m" (*(volatile uint16_t *)(uintptr_t) addr)
 			 : "memory");
+#endif
 
 	return ret;
 }
 
 static ALWAYS_INLINE void sys_write32(uint32_t data, mm_reg_t addr)
 {
+#ifdef __llir__
+	__asm__ volatile
+		( "st %1, %0"
+		:
+		: "r"(data)
+		, "m" (*(volatile uint32_t *)(uintptr_t) addr)
+		: "memory"
+		);
+#else
 	__asm__ volatile("movl %0, %1"
 			 :
 			 : "r"(data), "m" (*(volatile uint32_t *)(uintptr_t) addr)
 			 : "memory");
+#endif
 }
 
 static ALWAYS_INLINE uint32_t sys_read32(mm_reg_t addr)
 {
 	uint32_t ret;
-
+#ifdef __llir__
+	__asm__ volatile
+		( "ld.i32 %0, %1"
+		: "=r"(ret)
+		: "m" (*(volatile uint32_t *)(uintptr_t) addr)
+		: "memory"
+		);
+#else
 	__asm__ volatile("movl %1, %0"
 			 : "=r"(ret)
 			 : "m" (*(volatile uint32_t *)(uintptr_t) addr)
 			 : "memory");
-
+#endif
 	return ret;
 }
 
 static ALWAYS_INLINE void sys_set_bit(mem_addr_t addr, unsigned int bit)
 {
+#ifdef __llir__
+	__builtin_trap();
+#else
 	__asm__ volatile("btsl %1, %0"
 			 : "+m" (*(volatile uint32_t *) (addr))
 			 : "Ir" (bit)
 			 : "memory");
+#endif
 }
 
 static ALWAYS_INLINE void sys_clear_bit(mem_addr_t addr, unsigned int bit)
 {
+#ifdef __llir__
+	__builtin_trap();
+#else
 	__asm__ volatile("btrl %1, %0"
 			 : "+m" (*(volatile uint32_t *) (addr))
 			 : "Ir" (bit));
+#endif
 }
 
 static ALWAYS_INLINE int sys_test_bit(mem_addr_t addr, unsigned int bit)
 {
 	int ret;
 
+#ifdef __llir__
+	__builtin_trap();
+#else
 	__asm__ volatile("btl %2, %1;"
 			 "sbb %0, %0"
 			 : "=r" (ret), "+m" (*(volatile uint32_t *) (addr))
 			 : "Ir" (bit));
+#endif
 
 	return ret;
 }
@@ -183,11 +277,14 @@ static ALWAYS_INLINE int sys_test_and_set_bit(mem_addr_t addr,
 {
 	int ret;
 
+#ifdef __llir__
+	__builtin_trap();
+#else
 	__asm__ volatile("btsl %2, %1;"
 			 "sbb %0, %0"
 			 : "=r" (ret), "+m" (*(volatile uint32_t *) (addr))
 			 : "Ir" (bit));
-
+#endif
 	return ret;
 }
 
@@ -196,10 +293,14 @@ static ALWAYS_INLINE int sys_test_and_clear_bit(mem_addr_t addr,
 {
 	int ret;
 
+#ifdef __llir__
+	__builtin_trap();
+#else
 	__asm__ volatile("btrl %2, %1;"
 			 "sbb %0, %0"
 			 : "=r" (ret), "+m" (*(volatile uint32_t *) (addr))
 			 : "Ir" (bit));
+#endif
 
 	return ret;
 }
@@ -264,11 +365,21 @@ static ALWAYS_INLINE bool arch_irq_unlocked(unsigned int key)
 
 static ALWAYS_INLINE uint32_t z_do_read_cpu_timestamp32(void)
 {
+#ifdef __llir__
+	#ifdef CONFIG_X86_64
+		uint64_t rv;
+		__asm__ volatile("x86_rdtsc.i64" : "=a" (rv) : : );
+		return rv;
+	#else
+		uint64_t rv;
+		__asm__ volatile("x86_rdtsc.i32" : "=a" (rv) : : );
+		return rv;
+	#endif
+#else
 	uint32_t rv;
-
 	__asm__ volatile("rdtsc" : "=a" (rv) : : "%edx");
-
 	return rv;
+#endif
 }
 
 /**
@@ -321,7 +432,11 @@ static inline uint64_t z_tsc_read(void)
 
 static ALWAYS_INLINE void arch_nop(void)
 {
+#ifdef __llir__
+	__asm__ volatile("x86_nop");
+#else
 	__asm__ volatile("nop");
+#endif
 }
 
 #endif /* _ASMLANGUAGE */

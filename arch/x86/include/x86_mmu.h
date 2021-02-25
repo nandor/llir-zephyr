@@ -193,10 +193,14 @@ extern bool z_x86_kpti_is_access_ok(void *virt, pentry_t *ptables)
 static inline void z_x86_cr3_set(uintptr_t phys)
 {
 	__ASSERT((phys & PTABLES_ALIGN) == 0U, "unaligned page tables");
-#ifdef CONFIG_X86_64
-	__asm__ volatile("movq %0, %%cr3\n\t" : : "r" (phys) : "memory");
+#ifdef __llir__
+	__asm__ volatile("set $x86_cr3, %0\n\t" : : "r" (phys) : "memory");
 #else
-	__asm__ volatile("movl %0, %%cr3\n\t" : : "r" (phys) : "memory");
+	#ifdef CONFIG_X86_64
+		__asm__ volatile("movq %0, %%cr3\n\t" : : "r" (phys) : "memory");
+	#else
+		__asm__ volatile("movl %0, %%cr3\n\t" : : "r" (phys) : "memory");
+	#endif
 #endif
 }
 
@@ -207,9 +211,17 @@ static inline uintptr_t z_x86_cr3_get(void)
 {
 	uintptr_t cr3;
 #ifdef CONFIG_X86_64
+	#ifdef __llir__
+	__asm__ volatile("get.i64 %0, $x86_cr3\n\t" : "=r" (cr3));
+	#else
 	__asm__ volatile("movq %%cr3, %0\n\t" : "=r" (cr3));
+	#endif
 #else
+	#ifdef __llir__
+	__asm__ volatile("get.i32 %0, $x86_cr3\n\t" : "=r" (cr3));
+	#else
 	__asm__ volatile("movl %%cr3, %0\n\t" : "=r" (cr3));
+	#endif
 #endif
 	return cr3;
 }

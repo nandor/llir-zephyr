@@ -25,10 +25,13 @@ static inline bool arch_is_in_isr(void)
 	 * instructions, we need to work with both architectures here)
 	 */
 	bool ret;
-
+#ifdef __llir__
+	__builtin_trap();
+#else
 	__asm__ volatile ("pushf; cli");
 	ret = arch_curr_cpu()->nested != 0;
 	__asm__ volatile ("popf");
+#endif
 	return ret;
 #else
 	return _kernel.cpus[0].nested != 0U;

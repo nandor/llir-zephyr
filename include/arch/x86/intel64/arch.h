@@ -43,9 +43,11 @@ static ALWAYS_INLINE uint64_t sys_read64(mm_reg_t addr)
 static ALWAYS_INLINE unsigned int arch_irq_lock(void)
 {
 	unsigned long key;
-
+#ifdef __llir__
+	__builtin_trap();
+#else
 	__asm__ volatile ("pushfq; cli; popq %0" : "=g" (key) : : "memory");
-
+#endif
 	return (unsigned int) key;
 }
 
@@ -104,6 +106,15 @@ struct x86_ssf {
 	unsigned long rsp;
 };
 
+#ifdef __llir__
+#define ARCH_EXCEPT(reason_p) do { \
+	__asm__ volatile( \
+		"x86_int 32, %0\n\t" \
+		: \
+		: "r" (reason_p)); \
+	CODE_UNREACHABLE; /* LCOV_EXCL_LINE */ \
+} while (false)
+#else
 #define ARCH_EXCEPT(reason_p) do { \
 	__asm__ volatile( \
 		"movq %[reason], %%rax\n\t" \
@@ -112,6 +123,7 @@ struct x86_ssf {
 		: [reason] "i" (reason_p)); \
 	CODE_UNREACHABLE; /* LCOV_EXCL_LINE */ \
 } while (false)
+#endif
 
 #endif /* _ASMLANGUAGE */
 
