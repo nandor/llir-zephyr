@@ -9,6 +9,10 @@
 #include <offsets_short.h>
 #include <arch/cpu.h>
 
+#ifdef __llir__
+
+#else
+
 /* exports */
 GTEXT(arch_swap)
 GTEXT(z_thread_entry_wrapper)
@@ -73,3 +77,5 @@ SECTION_FUNC(TEXT, z_thread_entry_wrapper)
 	 */
 
 	jal x0, z_thread_entry
+
+#endif

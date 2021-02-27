@@ -7,6 +7,10 @@
 
 #include <toolchain.h>
 
+#ifdef __llir__
+
+#else
+
 /* exports */
 GTEXT(__start)
 
@@ -26,3 +30,5 @@ SECTION_FUNC(vectors, __start)
 
 	/* Jump to __initialize */
 	tail __initialize
+
+#endif

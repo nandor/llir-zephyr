@@ -51,7 +51,7 @@ __start:
 #endif
 
 #ifdef CONFIG_MULTIBOOT
-#error "not implemented"
+  #error "not implemented"
 
   #ifdef CONFIG_MULTIBOOT_FRAMEBUF
   #error "not implemented"

@@ -14,6 +14,10 @@
 #include <linker/sections.h>
 #include <soc.h>
 
+#ifdef __llir__
+
+#else
+
 /* exports */
 GTEXT(__soc_handle_irq)
 
@@ -56,3 +60,5 @@ SECTION_FUNC(exception.other, __soc_is_irq)
 not_interrupt:
 	/* return */
 	jalr x0, ra
+
+#endif

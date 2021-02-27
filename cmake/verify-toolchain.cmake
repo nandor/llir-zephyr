@@ -29,7 +29,7 @@ endif()
 
 # Pick host system's toolchain if we are targeting posix
 if("${ARCH}" STREQUAL "posix")
-  if(NOT "${ZEPHYR_TOOLCHAIN_VARIANT}" STREQUAL "llvm")
+  if((NOT "${ZEPHYR_TOOLCHAIN_VARIANT}" STREQUAL "llvm") AND (NOT "${ZEPHYR_TOOLCHAIN_VARIANT}" STREQUAL "llir"))
     set(ZEPHYR_TOOLCHAIN_VARIANT "host")
   endif()
   return()

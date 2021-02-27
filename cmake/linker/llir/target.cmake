@@ -1,6 +1,6 @@
 # The coverage linker flag is specific for clang.
 
-find_program(CMAKE_LINKER     ${LLIR_PREFIX}llir-ld      PATHS ${TOOLCHAIN_HOME} NO_DEFAULT_PATH)
+find_program(CMAKE_LINKER     ${LLIR_TRIPLE}-llir-ld      PATHS ${TOOLCHAIN_HOME} NO_DEFAULT_PATH)
 
 set_ifndef(LINKERFLAGPREFIX -Wl)
 

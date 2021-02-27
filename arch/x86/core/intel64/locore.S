@@ -4,7 +4,7 @@
  */
 
 #ifdef __llir__
-#include "lcore_llir.S"
+#include "locore_llir.S"
 #else
-#include "lcore_native.S"
+#include "locore_native.S"
 #endif

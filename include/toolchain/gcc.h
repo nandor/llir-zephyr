@@ -414,37 +414,11 @@ do {                                                                    \
 
 #define GEN_ABS_SYM_END
 
-#if defined(CONFIG_ARM) && !defined(CONFIG_ARM64)
-
-#error "Not implemented"
-
-#elif defined(CONFIG_X86)
-
 #define GEN_ABSOLUTE_SYM(name, value) \
 	unsigned name = value;
 
 #define GEN_ABSOLUTE_SYM_KCONFIG(name, value) \
 	unsigned __attribute__((section (".note.kconfig."))) CONFIG_##name = value;
-
-#elif defined(CONFIG_ARC) || defined(CONFIG_ARM64)
-
-#error "Not implemented"
-
-#elif defined(CONFIG_NIOS2) || defined(CONFIG_RISCV) || defined(CONFIG_XTENSA)
-
-#error "Not implemented"
-
-#elif defined(CONFIG_ARCH_POSIX)
-
-#error "Not implemented"
-
-#elif defined(CONFIG_SPARC)
-
-#error "Not implemented"
-
-#else
-#error processor architecture not supported
-#endif
 
 #else
 

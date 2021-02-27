@@ -180,6 +180,17 @@
 	((val) & ~(which)) | ((fieldval) * ((which) & ~((which)-1)))	\
 )									\
 
+#ifdef __llir__
+
+#define csr_read(csr)						__builtin_trap()
+#define csr_write(csr, val)					__builtin_trap()
+#define csr_read_set(csr, val)					__builtin_trap()
+#define csr_set(csr, val)					__builtin_trap()
+#define csr_read_clear(csr, val)				__builtin_trap()
+#define csr_clear(csr, val)					__builtin_trap()
+
+#else
+
 #define csr_read(csr)						\
 ({								\
 	register unsigned long __v;				\
@@ -230,5 +241,7 @@
 				: : "rK" (__v)			\
 				: "memory");			\
 })
+
+#endif /* __llir__ */
 
 #endif /* CSR_H_ */

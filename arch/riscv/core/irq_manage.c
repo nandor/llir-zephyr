@@ -15,7 +15,11 @@ FUNC_NORETURN void z_irq_spurious(const void *unused)
 
 	ARG_UNUSED(unused);
 
+#ifdef __llir__
+	__builtin_trap();
+#else
 	__asm__ volatile("csrr %0, mcause" : "=r" (mcause));
+#endif
 
 	mcause &= SOC_MCAUSE_EXP_MASK;
 

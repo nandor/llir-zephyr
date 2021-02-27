@@ -15,6 +15,10 @@
 #include <syscall.h>
 #include <arch/riscv/csr.h>
 
+#ifdef __llir__
+
+#else
+
 /* Convenience macros for loading/storing register states. */
 
 #define DO_FP_CALLER_SAVED(op, reg) \
@@ -1039,3 +1043,5 @@ skip_load_fp_caller_saved:
 #endif /* CONFIG_PMP_STACK_GUARD */
 	/* Call SOC_ERET to exit ISR */
 	SOC_ERET
+
+#endif

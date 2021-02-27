@@ -313,11 +313,14 @@ static ALWAYS_INLINE unsigned int arch_irq_lock(void)
 	unsigned int key;
 	ulong_t mstatus;
 
+#ifdef __llir__
+	__builtin_trap();
+#else
 	__asm__ volatile ("csrrc %0, mstatus, %1"
 			  : "=r" (mstatus)
 			  : "r" (MSTATUS_IEN)
 			  : "memory");
-
+#endif
 	key = (mstatus & MSTATUS_IEN);
 	return key;
 }
@@ -329,11 +332,14 @@ static ALWAYS_INLINE unsigned int arch_irq_lock(void)
 static ALWAYS_INLINE void arch_irq_unlock(unsigned int key)
 {
 	ulong_t mstatus;
-
+#ifdef __llir__
+	__builtin_trap();
+#else
 	__asm__ volatile ("csrrs %0, mstatus, %1"
 			  : "=r" (mstatus)
 			  : "r" (key & MSTATUS_IEN)
 			  : "memory");
+#endif
 }
 
 static ALWAYS_INLINE bool arch_irq_unlocked(unsigned int key)
@@ -350,7 +356,11 @@ static ALWAYS_INLINE bool arch_irq_unlocked(unsigned int key)
 
 static ALWAYS_INLINE void arch_nop(void)
 {
+#ifdef __llir__
+	__builtin_trap();
+#else
 	__asm__ volatile("nop");
+#endif
 }
 
 extern uint32_t z_timer_cycle_get_32(void);

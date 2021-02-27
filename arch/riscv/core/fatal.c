@@ -89,7 +89,11 @@ void _Fault(z_arch_esf_t *esf)
 #endif /* CONFIG_USERSPACE */
 	ulong_t mcause;
 
+#ifdef __llir__
+	__builtin_trap();
+#else
 	__asm__ volatile("csrr %0, mcause" : "=r" (mcause));
+#endif
 
 	mcause &= SOC_MCAUSE_EXP_MASK;
 	LOG_ERR("");

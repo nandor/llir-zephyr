@@ -9,6 +9,10 @@
 #include <linker/sections.h>
 #include <arch/cpu.h>
 
+#ifdef __llir__
+
+#else
+
 /* exports */
 GTEXT(__initialize)
 GTEXT(__reset)
@@ -93,3 +97,5 @@ aa_loop:
 	 * and then enters kernel z_cstart
 	 */
 	call _PrepC
+
+#endif

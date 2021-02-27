@@ -139,12 +139,16 @@ int arch_float_disable(struct k_thread *thread)
 	thread->base.user_options &= ~K_FP_REGS;
 
 	/* Clear the FS bits to disable the FPU. */
+#ifdef __llir__
+	__builtin_trap();
+#else
 	__asm__ volatile (
 		"mv t0, %0\n"
 		"csrrc x0, mstatus, t0\n"
 		:
 		: "r" (MSTATUS_FS_MASK)
 		);
+#endif
 
 	irq_unlock(key);
 
@@ -171,13 +175,16 @@ int arch_float_enable(struct k_thread *thread)
 	thread->base.user_options |= K_FP_REGS;
 
 	/* Set the FS bits to Initial to enable the FPU. */
+#ifdef __llir__
+	__builtin_trap();
+#else
 	__asm__ volatile (
 		"mv t0, %0\n"
 		"csrrs x0, mstatus, t0\n"
 		:
 		: "r" (MSTATUS_FS_INIT)
 		);
-
+#endif
 	irq_unlock(key);
 
 	return 0;
