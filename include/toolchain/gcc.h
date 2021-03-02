@@ -410,15 +410,43 @@ do {                                                                    \
 
 #define GEN_ABS_SYM_BEGIN(name) \
 	EXTERN_C void name(void); \
-	void name(void) {}
+	void name(void) { __asm__("trap\n.end\n"); \
 
-#define GEN_ABS_SYM_END
+#define GEN_ABS_SYM_END }
 
-#define GEN_ABSOLUTE_SYM(name, value) \
-	unsigned name = value;
+#if defined(CONFIG_ARM) && !defined(CONFIG_ARM64)
 
-#define GEN_ABSOLUTE_SYM_KCONFIG(name, value) \
-	unsigned __attribute__((section (".note.kconfig."))) CONFIG_##name = value;
+#error "not implemented"
+
+#elif defined(CONFIG_X86)
+
+#error "not implemented"
+
+#elif defined(CONFIG_ARC) || defined(CONFIG_ARM64)
+
+#error "not implemented"
+
+#elif defined(CONFIG_NIOS2) || defined(CONFIG_RISCV) || defined(CONFIG_XTENSA)
+
+/* No special prefixes necessary for constants in this arch AFAICT */
+#define GEN_ABSOLUTE_SYM(name, value)		\
+	__asm__(".globl\t" #name "\n\t.equ\t" #name ",%0" :  : "n"(value))
+
+#define GEN_ABSOLUTE_SYM_KCONFIG(name, value)       \
+	__asm__(".globl\t" #name "\n\t.equ\t" #name "," #value)
+
+
+#elif defined(CONFIG_ARCH_POSIX)
+
+#error "not implemented"
+
+#elif defined(CONFIG_SPARC)
+
+#error "not implemented"
+
+#else
+#error processor architecture not supported
+#endif
 
 #else
 
